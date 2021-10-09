@@ -1,21 +1,46 @@
+#include <ESP8266HTTPClient.h>
+#include <ESP8266WiFi.h>
+#include <WifiClient.h>
+
+WiFiClient wifiClient;
+
+String ssid = "XXXXX"; // WiFi Access Point name
+String password = "XXXXX"; // WiFi password
+
 void setup() {
-  // put your setup code here, to run once:
   Serial.begin(115200);
-  Serial1.begin(115200);
-  delay(2000);
-  Serial.println("Ready");
+
+  WiFi.begin(ssid,password);
+  while (WiFi.status() != WL_CONNECTED) {
+ 
+    delay(1000);
+    Serial.write("Connecting..");
+ 
+  }
+}
+
+void writeString(String stringData) { // Used to serially push out a String with Serial.write()
+
+  for (int i = 0; i < stringData.length(); i++)
+  {
+    Serial.write(stringData[i]);   // Push each char 1 by 1 on each loop pass
+  }
+
 }
 
 void loop() {
-    String s = "";
-    boolean t = false;
-    while(Serial1.available()) {
-       s = Serial1.readString();
-       t = true;
-    }
+  delay(3000);
+  Serial.write("Hello from ESP8266!\n");
 
-    if (t){
-      Serial.println("Received message from ESP8266!");
-      Serial.println(s);
-    }
+  HTTPClient http;
+  http.begin(wifiClient, "http://time.jsontest.com/");
+  int httpCode = http.GET();
+  String payload = http.getString();
+
+  Serial.write("HTTP Response Code: ");
+  writeString(String(httpCode));
+  Serial.write("\n");
+  writeString(payload);
+
+  
 }
