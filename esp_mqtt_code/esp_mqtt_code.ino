@@ -6,21 +6,21 @@
 WiFiClient wifiClient;
 PubSubClient client;
 
-String ssid = "XXXXXX";
-String password = "XXXXXX";
+String ssid = "XXXXX";
+String password = "XXXXX";
 
-String mqtt_broker = "192.168.1.8"; // IP address laptop saya sebagai "broker" di port 1883
+String mqtt_broker = "192.168.1.8";
 String topic = "python/esp8266";
 int mqtt_port = 1883;
 
 void callback(char* topic, byte* payload, unsigned int length) {
     Serial.write("Message arrived in topic: ");
     writeString(topic);
-    Serial.write("Message:");
+    Serial.write("\n'");
     for (int i = 0; i < length; i++) {
-        writeString(String(payload[i]));
+        writeString(String((char)payload[i]));
     }
-    Serial.write("\n-----------------------");
+    Serial.write("'\n-----------------------");
 }
 
 void setup() {
@@ -30,11 +30,11 @@ void setup() {
   while (WiFi.status() != WL_CONNECTED) {
  
     delay(1000);
-    Serial.write("Connecting..");
+    Serial.write("Connecting..\n");
  
   }
   
-  Serial.write("Hello from ESP8266!\n");
+  Serial.write("Connected to Wi-Fi!, Hello from ESP8266!\n");
 
 
   Serial.write("Connecting to MQTT server...\n");
@@ -53,8 +53,13 @@ void setup() {
           delay(1000);
       }
   }
-    client.publish(topic.c_str(), "Initial ESP8266 message!");
-    client.subscribe("python/esp8266");
+
+  Serial.write("Connected to MQTT Broker! subscribing to 'python/esp8266'\n");
+  
+  client.publish(topic.c_str(), "Initial ESP8266 message!");
+  client.subscribe("python/esp8266");
+
+  Serial.write("Awaiting for messages to 'python/esp8266' topic through MQTT...\n");
 }
 
 void writeString(String stringData) { // Used to serially push out a String with Serial.write()
@@ -67,7 +72,5 @@ void writeString(String stringData) { // Used to serially push out a String with
 }
 
 void loop() {
-  delay(5000);
-  Serial.write("Waiting for messages...");
   client.loop();
 }

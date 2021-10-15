@@ -2,7 +2,7 @@ from paho.mqtt import client as mqtt_client
 
 broker = '0.0.0.0'
 port = 1883
-topic = "python/hello"
+topic = "python/esp8266"
 client_id = "python-steven-1"
 
 def connect_mqtt():
@@ -21,7 +21,7 @@ def subscribe(client: mqtt_client):
     def on_message(client, userdata, msg):
         print(f"Received `{msg.payload.decode()}` from `{msg.topic}` topic")
 
-    client.subscribe("python/receive")
+    client.subscribe(topic)
     client.on_message = on_message
 
 if __name__ == "__main__":
